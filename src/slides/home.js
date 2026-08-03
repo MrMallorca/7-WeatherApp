@@ -13,6 +13,21 @@ export default function loadHomePage() {
 
 }
 
+import weatherIcons from '../assets/js/weatherIcon.js';
+
+class Weather {
+    constructor(data) {
+        this.city = data.resolvedAddress;
+        this.temp = data.currentConditions.temp;
+        this.icon = data.currentConditions.icon;
+        this.humidity = data.currentConditions.humidity;
+        this.wind = data.currentConditions.windspeed;
+        this.conditions = data.currentConditions.conditions;
+        this.description = data.description;
+        this.uvindex = data.currentConditions.uvindex;
+    }
+}
+
 
 function createNavBar() {
     const nav = document.createElement('nav');
@@ -23,14 +38,13 @@ function createNavBar() {
             <circle d cx="12" cy="10" r="4" fill="#0EA5E9"></circle>
             <path d="M12 17v4" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"></path>
             </svg>
-            <span class="nav-logo-dot"></span>ClimaApp
+            <span class="nav-logo-dot"></span>WeatherApp
         </div>
         <div class="nav-links">
-            <a href="#" class="nav-link active">Buscar</a>
-            <a href="#" class="nav-link">Mapas</a>
+            <a href="#" class="nav-link active">Search</a>
+            <a href="#" class="nav-link">Maps</a>
         </div>
         <div>
-
         </div>
     `;
     return nav;
@@ -41,60 +55,52 @@ function createBody() {
     const main = document.createElement('div');
     main.classList.add('main');
     main.innerHTML = `
-        <div class="left" data-component="hero-panel">
-            <div class="badge-tag"><span class="badge-tag-dot"></span>Tiempo real · API actualizada</div>
-            <h1 class="hero-title">El clima de<br><span>cualquier ciudad</span><br>al instante</h1>
-            <p class="hero-sub">Escribe el nombre de tu ciudad y obtén temperatura, humedad, viento y pronóstico de 5 días en segundos.</p>
+        <div class="left">
+            <div class="badge-tag"><span class="badge-tag-dot"></span>Live weather · API updated</div>
+            <h1 class="hero-title">The weather of<br><span>any city</span><br>in an instant</h1>
+            <p class="hero-sub">Type your city name and get temperature, humidity, wind, and forecast in seconds.</p>
 
-            
-            <div class="globe-wrap">
-            <div class="globe-sphere">
-                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="none">
-                <circle cx="38" cy="32" r="14" fill="#FDE68A" stroke="#FBBF24" stroke-width="2.5"></circle>
-                <line x1="38" y1="12" x2="38" y2="6" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round"></line>
-                <line x1="55.6" y1="14.4" x2="59.8" y2="10.2" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round"></line>
-                <line x1="62" y1="32" x2="68" y2="32" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round"></line>
-                <line x1="20.4" y1="14.4" x2="16.2" y2="10.2" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round"></line>
-                <line x1="14" y1="32" x2="8" y2="32" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round"></line>
-                <ellipse cx="36" cy="54" rx="18" ry="10" fill="white"></ellipse>
-                <ellipse cx="26" cy="56" rx="12" ry="8" fill="white"></ellipse>
-                <ellipse cx="50" cy="56" rx="12" ry="8" fill="white"></ellipse>
-                <ellipse cx="36" cy="48" rx="12" ry="9" fill="white"></ellipse>
-                </svg>
+            <div class="descriptionSection">
+                <div class="globe-wrap">
+                <div class="globe-sphere">
+                    <img src="${weatherIcons["clear-day"]}" alt="Weather Icon" class="weather-icon">
+                </div>
+                <div class="globe-cloud">
+                    <img src="${weatherIcons["clear-day"]}" alt="Weather Icon" class="weather-icon">
+                    <span id="conditions"></span>
+                </div>
+                <div class="globe-temp">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="rgba(255,255,255,0.8)"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"></path></svg>
+                    <span id="city"></span>
+                    <span id="temp"></span>
+                </div>
+                </div>
+                <div class="weatherSection">
+                    <span id="descriptionWeather"></span>
+                </div>
             </div>
-            <div class="globe-cloud">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" fill="#93C5FD"></path></svg>
-                Parcialmente nublado
-            </div>
-            <div class="globe-temp">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="rgba(255,255,255,0.8)"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"></path></svg>
-                27°C Sevilla
-            </div>
-            </div>
-
             
             <div class="stats-row">
             <div class="stat-pill">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" stroke="#0EA5E9" stroke-width="2"></path></svg>
-                Humedad <span class="stat-pill-val">62%</span>
+                Humidity <span class="stat-pill-val" id="humidity"></span>
             </div>
             <div class="stat-pill">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"></path></svg>
-                Viento <span class="stat-pill-val">18 km/h</span>
+                Wind <span class="stat-pill-val" id="wind"></span>
             </div>
             <div class="stat-pill">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#FCD34D"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2" stroke="#FCD34D" stroke-width="2" stroke-linecap="round"></path></svg>
-                UV <span class="stat-pill-val">Índice 8</span>
+                UV <span class="stat-pill-val" id="uvindex"></span>
             </div>
             </div>
         </div>
-
         
-        <div class="right" data-component="search-panel">
+        <div class="right">
             <div class="search-card">
-            <div class="sc-eyebrow">Buscar ciudad</div>
-            <h2 class="sc-title">¿Dónde quieres ver el clima?</h2>
-            <p class="sc-sub">Introduce el nombre de la ciudad y pulsa buscar.</p>
+            <div class="sc-eyebrow">Search city</div>
+            <h2 class="sc-title">Where do you want to see the weather?</h2>
+            <p class="sc-sub">Enter the city name and press search.</p>
 
             <div class="input-row">
                 <div class="input-wrap">
@@ -102,21 +108,21 @@ function createBody() {
                     <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#38BDF8" stroke-width="2.2" stroke-linecap="round"></path>
                     <path d="M21 21L16.65 16.65" stroke="#38BDF8" stroke-width="2.2" stroke-linecap="round"></path>
                 </svg>
-                <input class="city-input" type="text" placeholder="Ej: Madrid, Buenos Aires, Tokyo…" aria-label="Nombre de la ciudad">
+                <input class="city-input" id="city-input" type="text" placeholder="Example: Madrid, Buenos Aires, Tokyo…" aria-label="City name">
                 </div>
-                <button class="search-btn">
+                <button class="search-btn" id="weatherBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-width="2" stroke-linecap="round"></path><path d="M21 21L16.65 16.65" stroke="white" stroke-width="2" stroke-linecap="round"></path></svg>
-                Buscar
+                Search
                 </button>
             </div>
 
             <div class="divider">
                 <div class="divider-line"></div>
-                <span class="divider-text">Búsquedas recientes</span>
+                <span class="divider-text">Recent searches</span>
                 <div class="divider-line"></div>
             </div>
 
-            <p class="rc-title">Últimas ciudades</p>
+            <p class="rc-title">Recent cities</p>
             <div class="rc-list">
                 <div class="rc-item">
                 <div class="rc-icon">
@@ -143,12 +149,12 @@ function createBody() {
 
             <button class="btn-gps">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#0EA5E9" opacity=".3"></path><circle cx="12" cy="9" r="3" fill="#0EA5E9"></circle></svg>
-                Usar mi ubicación actual
+                Use my current location
             </button>
 
             <div class="tip">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10" stroke="#0EA5E9" stroke-width="2"></circle><path d="M12 8v4M12 16h.01" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"></path></svg>
-                <span>Pulsa <kbd>Enter</kbd> para buscar rápidamente.</span>
+                <span>Press <kbd>Enter</kbd> to search quickly.</span>
             </div>
             </div>
         </div>
@@ -157,16 +163,47 @@ function createBody() {
     return main;
 }
 
-function handleWeatherButtonClick() {
-    const cityInput = document.getElementById('cityInput');
+async function handleWeatherButtonClick() {
+    const cityInput = document.getElementById('city-input');
     const city = (cityInput?.value || '').trim();
-    
-        if (!city) return;
-    getWeather(city);
+
+    //Declaramos variables para los input del DOM y enviamos los valores
+
+    const cityDisplay = document.getElementById('city');
+    const weatherIcon = document.querySelectorAll('.weather-icon');
+    const descriptionWeather = document.getElementById('descriptionWeather');
+    const conditionsInput = document.getElementById('conditions');
+    const tempInput = document.getElementById('temp');
+    const humidityInput = document.getElementById('humidity');
+    const windInput = document.getElementById('wind');
+    const uvindexInput = document.getElementById('uvindex');
+
+    if (!city) return;
+
+    const words = city.split(" ");
+    let formattedCity = "";
+
+    for (const word of words) {
+        formattedCity += word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() + " ";
+    }
+
+    //getWeather(city);
+    const weather = await getWeather(formattedCity);
+
+    cityDisplay.innerHTML = weather.city;
+    weatherIcon.forEach(icon => {
+    icon.src = weatherIcons[weather.icon];
+    });
+    descriptionWeather.innerHTML = weather.description;
+    conditionsInput.innerHTML = weather.conditions;
+    tempInput.innerHTML = `${weather.temp}°C`;
+    humidityInput.innerHTML = `${weather.humidity}%`;
+    windInput.innerHTML = `${weather.wind} km/h`;
+    uvindexInput.innerHTML = weather.uvindex;
+
 }
 
-function getWeather(city) {
-    const fetchWeatherData = async (city) => {
+async function getWeather(city) {
         const apiKey = 'CWAX8Q2T2V7EC7T9T6XWMKDLX';
         const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodeURIComponent(city)}/next7days?unitGroup=metric&key=${apiKey}&contentType=json`;
         try {
@@ -177,20 +214,18 @@ function getWeather(city) {
             const data = await response.json();
             console.log('Resolved Address:', data.resolvedAddress);
             console.log('Description:', data.description);
-            data.days.forEach(day => {
-                // You can process and display data here, e.g., console.log(data.days[0].tempmax);
-                console.log(`Date: ${day.datetime}, Temp Max: ${day.tempmax}, Temp Min: ${day.tempmin}`);
-            });
+            return new Weather(data);
+
         } catch (error) {
             console.error('Fetch error:', error);
         }
-    };
-    fetchWeatherData(city);
+
 }
+
+
 
 function bindEventListeners() {
     const weatherBtn = document.getElementById('weatherBtn');
     weatherBtn.addEventListener('click', handleWeatherButtonClick);
-    
 }
 
