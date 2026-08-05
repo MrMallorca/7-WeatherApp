@@ -1,3 +1,7 @@
+import { getWeatherByCity, getWeatherByCurrentLocation, Weather } from '../assets/js/getWeather.js'; 
+
+import weatherIcons from '../assets/js/weatherIcon.js';
+
 
 export default function loadHomePage() { 
 
@@ -12,22 +16,6 @@ export default function loadHomePage() {
     bindEventListeners();
 
 }
-
-import weatherIcons from '../assets/js/weatherIcon.js';
-
-class Weather {
-    constructor(data) {
-        this.city = data.resolvedAddress;
-        this.temp = data.currentConditions.temp;
-        this.icon = data.currentConditions.icon;
-        this.humidity = data.currentConditions.humidity;
-        this.wind = data.currentConditions.windspeed;
-        this.conditions = data.currentConditions.conditions;
-        this.description = data.description;
-        this.uvindex = data.currentConditions.uvindex;
-    }
-}
-
 
 function createNavBar() {
     const nav = document.createElement('nav');
@@ -167,17 +155,6 @@ async function handleWeatherButtonClick() {
     const cityInput = document.getElementById('city-input');
     const city = (cityInput?.value || '').trim();
 
-    //Declaramos variables para los input del DOM y enviamos los valores
-
-    const cityDisplay = document.getElementById('city');
-    const weatherIcon = document.querySelectorAll('.weather-icon');
-    const descriptionWeather = document.getElementById('descriptionWeather');
-    const conditionsInput = document.getElementById('conditions');
-    const tempInput = document.getElementById('temp');
-    const humidityInput = document.getElementById('humidity');
-    const windInput = document.getElementById('wind');
-    const uvindexInput = document.getElementById('uvindex');
-
     if (!city) return;
 
     const words = city.split(" ");
@@ -188,11 +165,45 @@ async function handleWeatherButtonClick() {
     }
 
     //getWeather(city);
-    const weather = await getWeather(formattedCity);
+    const weather = await getWeatherByCity(formattedCity);
+    
+    loadWeatherData(weather);
+
+}
+
+
+async function handleWeatherLiveLocation() {
+    
+const weather = await getWeatherByCurrentLocation();
+
+loadWeatherData(weather);
+
+}
+
+function bindEventListeners() {
+    const weatherBtn = document.getElementById('weatherBtn');
+    weatherBtn.addEventListener('click', handleWeatherButtonClick);
+
+    const liveLocationBtn = document.querySelector('.btn-gps');
+    liveLocationBtn.addEventListener('click', async () => {
+        handleWeatherLiveLocation();
+    });
+}
+
+function loadWeatherData(weather) {
+    //Declaramos variables para los input del DOM y enviamos los valores
+    const cityDisplay = document.getElementById('city');
+    const weatherIcon = document.querySelectorAll('.weather-icon');
+    const descriptionWeather = document.getElementById('descriptionWeather');
+    const conditionsInput = document.getElementById('conditions');
+    const tempInput = document.getElementById('temp');
+    const humidityInput = document.getElementById('humidity');
+    const windInput = document.getElementById('wind');
+    const uvindexInput = document.getElementById('uvindex');
 
     cityDisplay.innerHTML = weather.city;
     weatherIcon.forEach(icon => {
-    icon.src = weatherIcons[weather.icon];
+        icon.src = weatherIcons[weather.icon];
     });
     descriptionWeather.innerHTML = weather.description;
     conditionsInput.innerHTML = weather.conditions;
@@ -200,32 +211,7 @@ async function handleWeatherButtonClick() {
     humidityInput.innerHTML = `${weather.humidity}%`;
     windInput.innerHTML = `${weather.wind} km/h`;
     uvindexInput.innerHTML = weather.uvindex;
-
-}
-
-async function getWeather(city) {
-        const apiKey = 'CWAX8Q2T2V7EC7T9T6XWMKDLX';
-        const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodeURIComponent(city)}/next7days?unitGroup=metric&key=${apiKey}&contentType=json`;
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const data = await response.json();
-            console.log('Resolved Address:', data.resolvedAddress);
-            console.log('Description:', data.description);
-            return new Weather(data);
-
-        } catch (error) {
-            console.error('Fetch error:', error);
-        }
-
 }
 
 
-
-function bindEventListeners() {
-    const weatherBtn = document.getElementById('weatherBtn');
-    weatherBtn.addEventListener('click', handleWeatherButtonClick);
-}
 
