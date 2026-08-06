@@ -2,7 +2,6 @@ import { getWeatherByCity, getWeatherByCurrentLocation, Weather } from '../asset
 
 import weatherIcons from '../assets/js/weatherIcon.js';
 
-
 export default function loadHomePage() { 
 
     const content = document.getElementById('content');
@@ -169,6 +168,8 @@ async function handleWeatherButtonClick() {
     
     loadWeatherData(weather);
 
+    cityInput.value = '';
+
 }
 
 
@@ -211,6 +212,7 @@ function loadWeatherData(weather) {
     humidityInput.innerHTML = `${weather.humidity}%`;
     windInput.innerHTML = `${weather.wind} km/h`;
     uvindexInput.innerHTML = weather.uvindex;
+
 }
 
 
