@@ -1,10 +1,10 @@
 import loadHomePage from '../slides/home.js'; 
-import loadMaps from '../slides/maps.js'; 
+import loadMapsPage from '../slides/maps.js'; 
 
-export default function loadNavBarPage() {
+export default function loadNavBarPage(activePage = 'search') {
     const content = document.getElementById('content');
 
-    const navBar = loadNavBar();
+    const navBar = loadNavBar(activePage);
     content.appendChild(navBar);
 
     bindEventListeners();
@@ -13,7 +13,7 @@ export default function loadNavBarPage() {
 }
 
 
-function loadNavBar() {
+function loadNavBar(activePage = 'search') {
     const nav = document.createElement('nav');
     nav.innerHTML = `
         <div class="nav-logo">
@@ -25,12 +25,14 @@ function loadNavBar() {
             <span class="nav-logo-dot"></span>WeatherApp
         </div>
         <div class="nav-links">
-            <a href="#" class="nav-link active" id="searchNavLink">Search</a>
-            <a href="#" class="nav-link" id="mapsNavLink">Maps</a>
+            <a href="#" class="nav-link ${activePage === 'search' ? 'active' : ''}" id="searchNavLink">Search</a>
+            <a href="#" class="nav-link ${activePage === 'maps' ? 'active' : ''}" id="mapsNavLink">Maps</a>
         </div>
         <div>
         </div>
     `;
+
+
     return nav;
     
 }
@@ -38,8 +40,26 @@ function loadNavBar() {
 
 function bindEventListeners() {
     const searchNavLink = document.getElementById('searchNavLink');
-    searchNavLink.addEventListener('click', loadHomePage);
-
     const mapsNavLink = document.getElementById('mapsNavLink');
-    mapsNavLink.addEventListener('click', loadMaps);
+
+    if (searchNavLink) {
+        searchNavLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            document.querySelectorAll('.nav-link').forEach((link) => link.classList.remove('active'));
+            searchNavLink.classList.add('active');
+            loadHomePage();
+        });
+    }
+
+    if (mapsNavLink) {
+        mapsNavLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            document.querySelectorAll('.nav-link').forEach((link) => link.classList.remove('active'));
+            mapsNavLink.classList.add('active');
+            loadMapsPage();
+        });
+    }
 }
+
+
+

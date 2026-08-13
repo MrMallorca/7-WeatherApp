@@ -1,10 +1,9 @@
 import '../css/styles.css';
-
+import '../css/loadingPage.css';
 
 //Import js
 import loadHomePage from '../../slides/home.js'; 
-import loadNavBarPage from '../../components/navBar.js'; 
-
-loadNavBarPage();
+import loadLoadingPage from '../../slides/loadingPage.js'; 
 
 loadHomePage();
+//loadLoadingPage();

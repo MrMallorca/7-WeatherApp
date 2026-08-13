@@ -1,14 +1,20 @@
-import { getWeatherByCity, getWeatherByCurrentLocation, Weather } from '../assets/js/getWeather.js'; 
+import { getWeatherByCity, getWeatherByCurrentLocation, getCurrentLocationCity, Weather } from '../assets/js/getWeather.js'; 
 
 import loadNavBarPage from '../components/navBar.js'; 
+
+import loadLoadingPage from '../slides/loadingPage.js'; 
 
 import weatherIcons from '../assets/js/weatherIcon.js';
 
 export default function loadHomePage() { 
 
     const content = document.getElementById('content');
+    content.innerHTML = '';
 
-    const body = createBody();
+    const navBar = loadNavBarPage('search');
+    content.appendChild(navBar);
+
+    const body = loadBody();
     content.appendChild(body);
 
     bindEventListeners();
@@ -16,7 +22,7 @@ export default function loadHomePage() {
 }
 
 
-function createBody() {
+function loadBody() {
     const main = document.createElement('div');
     main.classList.add('main');
     main.innerHTML = `
@@ -93,21 +99,21 @@ function createBody() {
                 <div class="rc-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#FCD34D"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2" stroke="#FCD34D" stroke-width="2" stroke-linecap="round"></path></svg>
                 </div>
-                <div class="rc-info"><div class="rc-city">Madrid</div><div class="rc-country">España · hace 2 h</div></div>
+                <div class="rc-info"><div class="rc-city">Madrid</div><div class="rc-country">Spain</div></div>
                 <div class="rc-temp">23°</div>
                 </div>
                 <div class="rc-item">
                 <div class="rc-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" fill="#CBD5E1"></path></svg>
                 </div>
-                <div class="rc-info"><div class="rc-city">Buenos Aires</div><div class="rc-country">Argentina · ayer</div></div>
+                <div class="rc-info"><div class="rc-city">Buenos Aires</div><div class="rc-country">Argentina</div></div>
                 <div class="rc-temp">18°</div>
                 </div>
                 <div class="rc-item">
                 <div class="rc-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="#FCD34D"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2" stroke="#FCD34D" stroke-width="2" stroke-linecap="round"></path></svg>
                 </div>
-                <div class="rc-info"><div class="rc-city">Ciudad de México</div><div class="rc-country">México · ayer</div></div>
+                <div class="rc-info"><div class="rc-city">Mexico City</div><div class="rc-country">Mexico</div></div>
                 <div class="rc-temp">22°</div>
                 </div>
             </div>
@@ -117,10 +123,6 @@ function createBody() {
                 Use my current location
             </button>
 
-            <div class="tip">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10" stroke="#0EA5E9" stroke-width="2"></circle><path d="M12 8v4M12 16h.01" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"></path></svg>
-                <span>Press <kbd>Enter</kbd> to search quickly.</span>
-            </div>
             </div>
         </div>
 
@@ -141,22 +143,32 @@ async function handleWeatherButtonClick() {
         formattedCity += word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() + " ";
     }
 
-    //getWeather(city);
+    loadLoadingPage(formattedCity);
+
     const weather = await getWeatherByCity(formattedCity);
-    
-    loadWeatherData(weather);
 
-    cityInput.value = '';
-
+    setTimeout(() => {
+        loadHomePage(weather);
+        loadWeatherData(weather);
+        if (cityInput) cityInput.value = '';
+    }, 3000);
 }
 
 
 async function handleWeatherLiveLocation() {
-    
-const weather = await getWeatherByCurrentLocation();
+    const city = await getCurrentLocationCity();
+    const locationName = city || 'Your location';
 
-loadWeatherData(weather);
+    loadLoadingPage(locationName);
 
+    const weather = await getWeatherByCurrentLocation();
+
+    if (!weather) return;
+
+    setTimeout(() => {
+        loadHomePage(weather);
+        loadWeatherData(weather);
+    }, 3000);
 }
 
 function bindEventListeners() {

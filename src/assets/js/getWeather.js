@@ -15,13 +15,14 @@ export async function getWeatherByCity(city) {
   return fetchWeather(city);
 }
 
-async function getWeatherByCoords(longitude, latitude) {
-  return fetchWeather(`${latitude},${longitude}`);
+export async function getCurrentLocationCity() {
+    const { latitude, longitude } = await getLiveLocation();
+
+    return await getCityByCoords(longitude, latitude);
 }
 
 export async function getWeatherByCurrentLocation() {
     const { latitude, longitude } = await getLiveLocation();
-
     const city = await getCityByCoords(longitude, latitude);
     const weather = await getWeatherByCoords(longitude, latitude);
 
@@ -53,7 +54,6 @@ export async function fetchWeather(location) {
 
 }
 
-
 function getLiveLocation() {
     //Obtenemos la ubicación del usuario usando la API de geolocalización
     return new Promise((resolve, reject) => {
@@ -67,6 +67,10 @@ function getLiveLocation() {
             (error) => reject(error)
         );
     });
+}
+
+async function getWeatherByCoords(longitude, latitude) {
+  return fetchWeather(`${latitude},${longitude}`);
 }
 
 async function getCityByCoords(longitude, latitude) {
